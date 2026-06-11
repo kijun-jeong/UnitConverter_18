@@ -172,7 +172,7 @@ meter:2.5
 |:---|:---|:---|:---|
 | **RED-1** | `meter:2.5` | 변환 실행 | feet ≈ **8.2**, yard ≈ **2.7** (1자리) |
 | **RED-2** | `feet:8.2` 와 `meter:2.5` | 각각 앵커·등가 계산 | `CROSS_CHECK` **true** |
-| **RED-3** | RED-1 fixture | `M_TO_FT` 또는 앵커 순서 변경 | RED-1 **fail** *(회귀)* |
+| **RED-3** | RED-1 fixture | `M_TO_FT`·앵커 순서·R-06 반올림 규칙 변경 | RED-1 **fail** *(회귀)* |
 
 **성공 기준 매핑**
 
@@ -200,7 +200,7 @@ README 품질 요구와 정렬; Phase A에서는 **동작 계약**만 우선.
 
 - [ ] R-01~R-06 문서·코드·테스트 일치
 - [ ] RED-1, RED-2 통과
-- [ ] RED-3: 비율 tamper 시 실패 확인
+- [ ] RED-3: 비율·앵커 순서·반올림(R-06) tamper 시 RED-1 실패 확인
 - [ ] Skill 순서로 수동 1회 재현 가능
 - [ ] Phase B/C FR은 본 PRD에만 존재, Phase A Done에 포함 안 함
 

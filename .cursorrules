@@ -1,0 +1,49 @@
+# UnitConverter_18 — Cursor Rules
+
+## SSOT (Single Source of Truth)
+- 도메인 규칙·요구사항: `docs/PRD.md`
+- 실행 방법·실습 일정: `README.md`
+- Mom Test 근거: `Report/01.UnitConverter_ProblemDefinition_Report.md`
+- 코드와 PRD가 충돌하면 PRD를 우선한다.
+
+## 프로젝트 개요
+- Python CLI 단위 변환기. 입력 `unit:value` (예: `meter:2.5`) → meter 앵커 기준 전 단위 등가값 출력.
+- 진입점: `UnitConverter.py` → `converter.skill.run_skill`
+- 테스트: `pytest` (`tests/`, `pyproject.toml`)
+
+## 현재 Phase
+- **Phase A (세션 3)**: R-01~R-06, Command 4개, Skill, RED-1~3
+- Phase B/C (OCP·SRP, 설정 외부화, 동적 단위, JSON/CSV 출력)는 명시 요청 전 구현하지 않는다.
+
+## 도메인 규칙 (변경 시 RED-3 회귀 테스트 필수)
+- R-03: meter = 앵커; feet/yard는 `anchor_m`에서만 파생
+- R-04: `M_TO_FT = 3.28084`, `M_TO_YD = 1.09361` (`converter/constants.py`)
+- R-05: 유효 입력 시 meter, feet, yard 모두 출력
+- R-06: 출력 소수 1자리 반올림
+- Skill 순서: `PARSE_INPUT` → `TO_METER_ANCHOR` → `EMIT_ALL_EQUIVALENTS`
+
+## 코드 구조
+- `converter/commands.py` — PARSE_INPUT, TO_METER_ANCHOR, EMIT_ALL_EQUIVALENTS, CROSS_CHECK
+- `converter/constants.py` — 변환 상수
+- `converter/skill.py` — Skill 오케스트레이션
+- `tests/test_red.py` — RED-1, RED-2, RED-3
+
+## 코딩 원칙
+- 요청된 Phase/FR만 구현; 범위 밖 리팩터·기능 추가 금지
+- 매직 넘버 금지 — 비율·반올림 규칙은 상수 또는 PRD에 정의된 곳에만 둔다
+- 파싱 / 변환 / 출력 관심사 분리 유지 (Phase B 방향)
+- 비율·앵커·반올림 로직 변경 시 테스트 없이 커밋하지 않는다
+
+## 테스트 (RED SSOT)
+- RED-1: `meter:2.5` → feet ≈ 8.2, yard ≈ 2.7 (소수 1자리)
+- RED-2: `feet:8.2`와 `meter:2.5`의 `CROSS_CHECK` = true
+- RED-3: 비율·앵커 순서·R-06 반올림 tamper 시 RED-1이 실패해야 함
+- 구현 변경 후 `pytest` 실행
+
+## 금지 (Phase A)
+- cubit 동적 등록, JSON/YAML 설정 로드, JSON/CSV 출력 포맷
+- PRD 허용 단위(meter, feet, yard) 외 단위 추가
+- `docs/`, `Report/`, `Prompting/` 수정 (명시 요청 없이)
+
+## Git
+- 사용자가 요청할 때만 commit; push는 별도 요청 시에만
