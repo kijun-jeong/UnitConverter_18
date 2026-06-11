@@ -170,19 +170,19 @@ Skill: [`.cursor/skills/unit-converter-tdd/`](.cursor/skills/unit-converter-tdd/
 ### Git 브랜치 (ARRR TDD 파이프라인)
 
 ```
-staging  →  red  →  green
+spec  →  red  →  green
  문서만      RED      GREEN+Golden
 ```
 
 | 브랜치 | ARRR 단계 | 포함 | `UnitConverter.py` | pytest |
 |:---|:---|:---|:---|:---|
-| **`staging`** | Ask — 문서 | PRD · Report/01 · Prompting/01·03·04 | `main` 원본 CLI | — |
+| **`spec`** | Ask — 문서 | PRD · Report/01 · Prompting/01·03·04 | `main` 원본 CLI | — |
 | **`red`** | RED | converter 스텁 · RED-1~3 · Report/05 | `main` 원본 CLI | **4 failed** |
 | **`green`** *(현재)* | GREEN | converter 구현 · golden · Report/06 | `run_skill` 위임 | **5 passed** |
 
 ```bash
 git fetch origin
-git checkout staging   # 문서 단계
+git checkout spec   # 문서 단계
 git checkout red       # RED 단계
 git checkout green     # GREEN 단계
 ```
