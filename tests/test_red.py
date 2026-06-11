@@ -4,6 +4,16 @@ import pytest
 
 from converter.commands import cross_check
 from converter.skill import run_skill
+from tests._approval import assert_matches_golden
+
+
+def _format_red1_golden(equivalents: dict[str, float]) -> str:
+    lines = [
+        f"meter={equivalents['meter']}",
+        f"feet={equivalents['feet']}",
+        f"yard={equivalents['yard']}",
+    ]
+    return "\n".join(lines) + "\n"
 
 
 def _assert_red1(equivalents: dict[str, float]) -> None:
@@ -20,6 +30,11 @@ def test_red1():
 
     # Assert — R-05 전 단위, R-06 소수 1자리
     _assert_red1(equivalents)
+
+
+def test_red1_golden():
+    _, _, equivalents = run_skill("meter:2.5")
+    assert_matches_golden(_format_red1_golden(equivalents), "red1")
 
 
 def test_red2():
