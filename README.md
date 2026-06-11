@@ -115,10 +115,10 @@ python UnitConverter.py                 # CLI 동작 (main 원본)
 
 | 브랜치 | ARRR 단계 | pytest |
 |:---|:---|:---|
-| **`staging`** | Ask — 문서 | — |
+| **`spec`** | Ask — 문서 | — |
 | **`red`** *(현재)* | RED | **4 failed** |
 | **`green`** | GREEN+Golden | 5 passed |
 
 ```bash
-git fetch origin && git checkout staging && git checkout red && git checkout green
+git fetch origin && git checkout spec && git checkout red && git checkout green
 ```
