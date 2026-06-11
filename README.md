@@ -89,7 +89,7 @@ deactivate
 | [`docs/PRD.md`](docs/PRD.md) | 도메인 규칙 · FR |
 | [`Report/01.UnitConverter_ProblemDefinition_Report.md`](Report/01.UnitConverter_ProblemDefinition_Report.md) | Mom Test · 문제 정의 |
 
-### 문서·Export *(staging 범위)*
+### 문서·Export *(spec 범위)*
 
 | NN | Report | Transcript | 주제 |
 |:---:|:---|:---|:---|
@@ -100,19 +100,19 @@ deactivate
 ### Git 브랜치 (ARRR TDD 파이프라인)
 
 ```
-staging  →  red  →  green
+spec  →  red  →  green
  문서만      RED      GREEN+Golden
 ```
 
 | 브랜치 | ARRR 단계 | 포함 | pytest |
 |:---|:---|:---|:---|
-| **`staging`** *(현재)* | Ask — 문서 | PRD · Report/01 · Prompting/01·03·04 | — |
+| **`spec`** *(현재)* | Ask — 문서 | PRD · Report/01 · Prompting/01·03·04 | — |
 | **`red`** | RED | converter 스텁 · RED-1~3 · Report/05 | 4 failed |
 | **`green`** | GREEN | converter 구현 · golden · Report/06 | 5 passed |
 
 ```bash
 git fetch origin
-git checkout staging   # 문서 단계
+git checkout spec   # 문서 단계
 git checkout red       # RED 단계
 git checkout green     # GREEN 단계
 ```
