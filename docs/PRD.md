@@ -166,7 +166,60 @@ meter:2.5
 
 ---
 
-## 7. Test Loop (RED SSOT)
+## 7. 성공 기준 (Success Criteria)
+
+근거: `Report/01` *(도메인·Mom Test)*, `Report/05` *(RED)*, `Report/06` *(GREEN·Golden·Refactor)*
+
+### 7.1 도메인 성공 기준
+
+Mom Test에서 드러난 **교차 검증 비용**(7~8분·출처별 상이 숫자·3회 반복+엑셀)을 줄이기 위한 제품 수준 기준이다.
+
+| ID | 기준 | Mom Test 연결 | Rule / FR | 검증 |
+|:---|:---|:---|:---|:---|
+| **SC-1** | 동일 입력에 **meter 앵커 1개**를 먼저 확정하고, feet·yard 등 **모든 출력이 그 앵커에서만** 파생된다 | ② 출처별 `4.1016` / `4.10` / `4.1` — **단일 계산 경로** | R-03, R-04, R-05, R-06 · FR-CV-01, FR-CV-02 | **RED-1** |
+| **SC-2** | `feet:8.2`와 `meter:2.5`처럼 **다른 단위 입력**도 앵커·교차 등가가 **모순 없이** 일치한다 | ③ 3회 반복 변환 + 엑셀 재확인 — **교차 맥락 일치** | R-03 · FR-CV-03 | **RED-2** |
+| **SC-3** | SC-1·SC-2를 Test Loop로 고정했고, 비율·앵커 순서·반올림 규칙 변경 시 테스트가 **의도적으로** 깨진다 | ① 7~8분 교차 검증 — **회귀 테스트로 절차 고정** | R-04, R-06 | **RED-3** |
+
+**SC-1 상세 (RED-1)**
+
+- Given: `meter:2.5`
+- Then: `feet == 8.2`, `yard == 2.7` *(R-06 소수 1자리, 엄격 `==`)*
+
+**SC-2 상세 (RED-2)**
+
+- Given: `feet:8.2` 와 `meter:2.5` 각각 Skill 실행
+- Then: `CROSS_CHECK` **True** *(서로 다른 입력 경로, 동일 앵커·등가)*
+
+**SC-3 상세 (RED-3)**
+
+- Given: RED-1 fixture (`meter:2.5`)
+- When: `M_TO_FT` tamper **또는** `DECIMAL_PLACES`(R-06) tamper
+- Then: RED-1 assert **AssertionError** *(“대충 비슷하면 통과” 금지)*
+
+### 7.2 TDD·ARRR 완료 기준 *(Phase A 세션 3)*
+
+구현·테스트 파이프라인이 SC-1~3를 **재현 가능하게** 고정했는지 판정한다.
+
+| 단계 | 기준 | 판정 *(Report 실측)* |
+|:---|:---|:---|
+| **RED** | `converter/` 골격만 있을 때 `tests/test_red.py` RED-1~3가 **실패**한다. 테스트 파일만 수정; assert 완화·skip 금지 | 4 failed, 0 passed *(Report/05)* |
+| **GREEN** | `converter/constants.py` → `commands.py` → `skill.py` 최소 구현 후 RED-1·RED-2 **통과**, RED-3 tamper 시 RED-1 **실패** 확인 | RED 묶음 pass *(Report/06)* |
+| **Golden** | RED-1 CLI 출력이 `tests/golden/red1.approved.txt`와 **일치**한다 | `test_red1_golden` matched *(Report/06)* |
+| **Refactor** | R-06 반올림을 `_round_display` 등 단일 SSOT로 추출해도 golden·RED 회귀 **유지** | pytest 5 passed, golden diff 없음 *(Report/06)* |
+
+**Phase A Done 종합:** SC-1~3 충족 + `python -m pytest tests/ -v` → **5 passed, 0 failed** *(RED-1~3 + `test_red1_golden`)*
+
+### 7.3 성공 기준 ↔ Test Loop 매핑
+
+| 성공 기준 | Test | Skill 검증 포인트 |
+|:---|:---|:---|
+| SC-1 | RED-1 | `PARSE_INPUT` → `TO_METER_ANCHOR` → `EMIT_ALL_EQUIVALENTS` 1회로 전 단위 출력 |
+| SC-2 | RED-2 | 서로 다른 입력 경로의 `CROSS_CHECK` |
+| SC-3 | RED-3 | 비율·앵커 순서·R-06 tamper 시 RED-1 회귀 실패 |
+
+---
+
+## 8. Test Loop (RED SSOT)
 
 | Test ID | Given | When | Then |
 |:---|:---|:---|:---|
@@ -174,15 +227,9 @@ meter:2.5
 | **RED-2** | `feet:8.2` 와 `meter:2.5` | 각각 앵커·등가 계산 | `CROSS_CHECK` **true** |
 | **RED-3** | RED-1 fixture | `M_TO_FT`·앵커 순서·R-06 반올림 규칙 변경 | RED-1 **fail** *(회귀)* |
 
-**성공 기준 매핑**
-
-- SC-1 ← RED-1 (단일 앵커·전 단위)
-- SC-2 ← RED-2 (교차 경로)
-- SC-3 ← RED-3 (규칙 변경 시 깨짐)
-
 ---
 
-## 8. 아키텍처 방향 *(Phase B+)*
+## 9. 아키텍처 방향 *(Phase B+)*
 
 README 품질 요구와 정렬; Phase A에서는 **동작 계약**만 우선.
 
@@ -196,21 +243,26 @@ README 품질 요구와 정렬; Phase A에서는 **동작 계약**만 우선.
 
 ---
 
-## 9. 수용 기준 체크리스트 (Phase A)
+## 10. 수용 기준 체크리스트 (Phase A)
 
+- [ ] **SC-1**: RED-1 통과 — meter 앵커·전 단위·R-06 반올림
+- [ ] **SC-2**: RED-2 통과 — 교차 입력 경로 `CROSS_CHECK` true
+- [ ] **SC-3**: RED-3 통과 — 비율·앵커 순서·반올림 tamper 시 RED-1 실패
 - [ ] R-01~R-06 문서·코드·테스트 일치
-- [ ] RED-1, RED-2 통과
-- [ ] RED-3: 비율·앵커 순서·반올림(R-06) tamper 시 RED-1 실패 확인
-- [ ] Skill 순서로 수동 1회 재현 가능
+- [ ] Skill 순서(`PARSE_INPUT` → `TO_METER_ANCHOR` → `EMIT_ALL_EQUIVALENTS`)로 수동 1회 재현 가능
+- [ ] `test_red1_golden` — `red1.approved.txt` matched *(§7.2 Golden)*
+- [ ] `python -m pytest tests/ -v` → 5 passed *(§7.2 Phase A Done)*
 - [ ] Phase B/C FR은 본 PRD에만 존재, Phase A Done에 포함 안 함
 
 ---
 
-## 10. 참조
+## 11. 참조
 
 | 문서 | 내용 |
 |:---|:---|
-| `Report/01.UnitConverter_ProblemDefinition_Report.md` | Mom Test, R-G-I-O, 표면 문제 |
+| `Report/01.UnitConverter_ProblemDefinition_Report.md` | Mom Test, R-G-I-O, **SC-1~3** |
+| `Report/05.UnitConverter_TDD_RED_Report.md` | `/tdd-red`, Harness 복원, RED 4 failed |
+| `Report/06.UnitConverter_ARRR_Cycle_Report.md` | ARRR 사이클, GREEN·Golden·Refactor, 5 passed |
 | `README.md` | 실습 일정, 실행, 전체 요구 목록 |
 
 ---
