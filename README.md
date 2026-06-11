@@ -81,3 +81,44 @@ deactivate
    - AI를 어떻게 활용했나? 도움이 된 순간과 한계는?
    - TC를 추가해보면서 개선에 미친 영향, TC 작성 팁
    - 클린코드와 리팩토링에서 느낀 장점과 어려운점
+
+### SSOT
+
+| 문서 | 용도 |
+|:---|:---|
+| [`docs/PRD.md`](docs/PRD.md) | R-01~R-06 · RED-1~3 |
+| [`.cursorrules`](.cursorrules) | Phase A · TDD 금지 |
+
+### 프로젝트 구조 *(RED 단계)*
+
+```
+converter/          # ... 스텁 (미구현)
+tests/test_red.py   # RED-1~3 assert
+UnitConverter.py    # main 원본 CLI (pytest 비대상)
+```
+
+### 테스트
+
+```bash
+pip install pytest
+python -m pytest tests/test_red.py -v   # 4 failed (의도적 RED)
+python UnitConverter.py                 # CLI 동작 (main 원본)
+```
+
+### 문서·Export *(red 범위)*
+
+| NN | Report | Transcript | 주제 |
+|:---:|:---|:---|:---|
+| 05 | [Report/05…](Report/05.UnitConverter_TDD_RED_Report.md) | [Prompting/05…](Prompting/05.UnitConverter_TDD_RED_Export-Transcript.md) | TDD RED |
+
+### Git 브랜치 (ARRR TDD 파이프라인)
+
+| 브랜치 | ARRR 단계 | pytest |
+|:---|:---|:---|
+| **`staging`** | Ask — 문서 | — |
+| **`red`** *(현재)* | RED | **4 failed** |
+| **`green`** | GREEN+Golden | 5 passed |
+
+```bash
+git fetch origin && git checkout staging && git checkout red && git checkout green
+```
