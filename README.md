@@ -81,3 +81,38 @@ deactivate
    - AI를 어떻게 활용했나? 도움이 된 순간과 한계는?
    - TC를 추가해보면서 개선에 미친 영향, TC 작성 팁
    - 클린코드와 리팩토링에서 느낀 장점과 어려운점
+
+### SSOT
+
+| 문서 | 용도 |
+|:---|:---|
+| [`docs/PRD.md`](docs/PRD.md) | 도메인 규칙 · FR |
+| [`Report/01.UnitConverter_ProblemDefinition_Report.md`](Report/01.UnitConverter_ProblemDefinition_Report.md) | Mom Test · 문제 정의 |
+
+### 문서·Export *(staging 범위)*
+
+| NN | Report | Transcript | 주제 |
+|:---:|:---|:---|:---|
+| 01 | [Report/01…](Report/01.UnitConverter_ProblemDefinition_Report.md) | [Prompting/01…](Prompting/01.UnitConverter_STEP1_Mom_Test_Interview_prompt.md) | Mom Test |
+| 03 | — | [Prompting/03…](Prompting/03.UnitConverter_Session3_Workbook_prompt.md) | 세션 3 워크북 |
+| 04 | — | [Prompting/04…](Prompting/04.UnitConverter_ProblemDefinition_PRD_prompt.md) | PRD 작성 |
+
+### Git 브랜치 (ARRR TDD 파이프라인)
+
+```
+staging  →  red  →  green
+ 문서만      RED      GREEN+Golden
+```
+
+| 브랜치 | ARRR 단계 | 포함 | pytest |
+|:---|:---|:---|:---|
+| **`staging`** *(현재)* | Ask — 문서 | PRD · Report/01 · Prompting/01·03·04 | — |
+| **`red`** | RED | converter 스텁 · RED-1~3 · Report/05 | 4 failed |
+| **`green`** | GREEN | converter 구현 · golden · Report/06 | 5 passed |
+
+```bash
+git fetch origin
+git checkout staging   # 문서 단계
+git checkout red       # RED 단계
+git checkout green     # GREEN 단계
+```
